@@ -1,0 +1,12 @@
+#display {
+    font-family: monospace;
+    font-size: 50px;
+    color: green;
+  
+    /* Typography */
+    text-align: center;
+  
+    /* Visual */
+    background: black;
+  }
+  

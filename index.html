@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Trivia Game</title>
+  <!-- Added link to the jQuery Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- Bootstrap File -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+</head>
+  <!-- Overall Bootstrap Grid -->
+  
+<div class="container">
+
+        <!-- Jumbotron with Title -->
+    <div class="bg-warning jumbotron">
+                <h1 class="text-center">
+                <strong>Pick the Disney Character!</strong>
+            <hr>      
+                </h1>
+                <div id="display">00:10</div>
+            <hr>
+                <div class="text-center">
+                    <button id="start" >Start Game</button>
+                </div>
+    
+            <hr>
+                <div id="instructions" class="text-center">
+                    <p>Question?</p>
+                        <p>
+                            <button id="1">Answer1</button>
+                        </p>
+                        <p>
+                            <button id="2">Answer2</button>
+                        </p>
+                        <p>
+                            <button id="3">Answer3</button>
+                        </p>                  
+                        <p>
+                            <button id="reset">Reset</button>
+                        </p>   
+                </div>
+
+            <hr>
+
+                <div class="container">
+                        <div class="row">
+                            <div class="col-sm-6">              
+                                <p >Correct: <span id="correct-text"></span></p>
+                            </div>
+                            <div class="col-sm-6">  
+                                <p >Wrong: <span id="wrong-text"></span></p>
+                            </div>
+                        </div>
+                </div>
+
+    </div>
+
+</div>
+
+<!--<script type="text/javascript" src="assets/javascript/app.js">-->
+<script>
+
+ // The array of questions for our quiz game.
+ var questions = [
+      { q: "Who is the first king in Lion King?", a: "Mufasa" },
+      { q: "Who is Ariel's guardian in Little Mermaid?", a: "Sebastian" },
+      { q: "What was the name of the little boy in Beauty and the Beast?", a: "Chip" },
+      { q: "Where is the setting of The Princess and the Frog?", a: "New Orleans" },
+      { q: "How did Aladdin get out of the cave of wonders?", a: "Magic Carpet" }
+    ];
+
+
+//  Variable that will hold our setInterval that runs the stopwatch
+var intervalId;
+// prevents the clock from being sped up unnecessarily
+var clockRunning = false;
+
+// Our watch object
+var watch = {
+
+  time: 10,
+
+  reset: function() {
+
+    watch.time = 10;
+    clockRunning = false;
+    clearInterval(intervalId);
+    // DONE: Change the "display" div to "00:00."
+    $("#display").text("00:10");
+
+  },
+  start: function() {
+
+    // DONE: Use setInterval to start the count here and set the clock to running.
+    if (!clockRunning) {
+
+        intervalId = setInterval(watch.count, 1000);
+        clockRunning = true;     
+        setTimeout(function() {clearInterval(intervalId)}, 1000 * 10); 
+    } 
+  },
+  stop: function() {
+
+    // DONE: Use clearInterval to stop the count here and set the clock to not be running.
+    clearInterval(intervalId);
+    clockRunning = false;
+  },
+  count: function() {
+
+    // DONE: decrement time by 1, remember we cant use "this" here.
+    watch.time--;
+    
+
+    // DONE: Get the current time, pass that into the stopwatch.timeConverter function,
+    //       and save the result in a variable.
+    var converted = watch.timeConverter(watch.time);
+    console.log(converted);
+
+    // DONE: Use the variable we just created to show the converted time in the "display" div.
+    $("#display").text(converted);
+  },
+  timeConverter: function(t) {
+
+    var minutes = Math.floor(t / 60);
+    var seconds = t - (minutes * 60);
+
+    if (seconds <= 10) {
+      seconds = "0" + seconds;
+    }
+
+    if (minutes === 0) {
+      minutes = "00";
+    }
+    return minutes + ":" + seconds;   
+  }
+
+};
+
+ // EXECUTE STUFF //
+ 
+ //  Start on click.
+$("#start").on("click", function() {
+
+    if ( watch.time === 10){
+    watch.start();
+    }
+    if (watch.time === 0){
+    watch.stop();
+    };
+}
+);
+
+//  Stop on click.
+$("#1").on("click", function() {
+    watch.stop();
+    }
+    );
+     
+//  Stop on click.
+$("#2").on("click", function() {
+    watch.stop();
+    }
+    );
+
+//  Stop on click.
+$("#3").on("click", function() {
+    watch.stop();
+    }
+    );
+
+
+//  Stop on click.
+$("#reset").on("click", function() {
+    watch.reset();
+    }
+    );
+
+</script>
+
+</body>
+</html>
