@@ -251,8 +251,10 @@ $("#start").on("click", function() {
 
 //  Stop on click.
 $("#a-text").on("click", function() {
+   //stop the clock
     watch.stop();
-      
+   
+   //let's see if we get it right 
    var a = quizQuestions[questionIndex].answers.a
 
     if (a === quizQuestions[questionIndex].correctAnswer) {
@@ -264,6 +266,8 @@ $("#a-text").on("click", function() {
         $("#wrong-text").text(wrong);
     }
 
+
+    //reset the clock and start it up again
     watch.reset();
     watch.start();
 
@@ -274,9 +278,10 @@ $("#a-text").on("click", function() {
      
 //  Stop on click.
 $("#b-text").on("click", function() {
+    //stop the clock
     watch.stop();
 
-    
+    //let's see if we get it right 
     var b = quizQuestions[questionIndex].answers.b
 
     if (b === quizQuestions[questionIndex].correctAnswer) {
@@ -288,6 +293,7 @@ $("#b-text").on("click", function() {
         $("#wrong-text").text(wrong);
     }
 
+    //reset the clock and start it up again
     watch.reset();
     watch.start();
 
@@ -298,8 +304,10 @@ $("#b-text").on("click", function() {
 
 //  Stop on click.
 $("#c-text").on("click", function() {
+    //stop the clock
     watch.stop();
 
+    //let's see if we get it right 
     var c = quizQuestions[questionIndex].answers.c
 
     if (c === quizQuestions[questionIndex].correctAnswer) {
@@ -311,6 +319,7 @@ $("#c-text").on("click", function() {
         $("#wrong-text").text(wrong);
     }
 
+    //reset the clock and start it up again
     watch.reset();
     watch.start();
     
@@ -320,7 +329,7 @@ $("#c-text").on("click", function() {
 });
 
 
-//  Stop on click.
+//  reset stuff
 $("#reset").on("click", function() {
     watch.reset();
     resetGame();
