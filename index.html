@@ -33,6 +33,9 @@
                             <p >Wrong: <span id="wrong-text"></span></p>
                         </div>
                         <div class="col-sm-6">  
+                            <p>Unanswered: <span id="unanswered-text"></span></p>
+                        </div>
+                        <div class="col-sm-6">  
                             <p>Final Score: <span id="finalScore-text"></span></p>
                         </div>
                     </div>        
@@ -73,12 +76,14 @@
 // We start the game with a score of 0.
 var correct = 0;
 var wrong = 0;
+var unanswered = 0;
 var questionIndex = 0;
 
 
 // Let's write things on the page
 $("#correct-text").text(correct);
 $("#wrong-text").text(wrong);
+$("#unanswered-text").text(unanswered);
 
 
 var quizQuestions = [
@@ -151,7 +156,6 @@ var watch = {
     // DONE: Change the "display" div to "00:00."
     $("#display").text("00:10");
 
-
   },
   start: function() {
 
@@ -159,30 +163,32 @@ var watch = {
     if (!clockRunning) {
 
         intervalId = setInterval(watch.count, 1000);
-        clockRunning = true;     
-        setTimeout(function() {clearInterval(intervalId)}, 1000 * 10); 
+        clockRunning = true;             
+        setTimeout(function() {clearInterval(intervalId)}, 1000 * 10);
     } 
   },
+
   stop: function() {
 
-    // DONE: Use clearInterval to stop the count here and set the clock to not be running.
+    // Use clearInterval to stop the count here and set the clock to not be running.
     clearInterval(intervalId);
     clockRunning = false;
   },
+
   count: function() {
 
-    // DONE: decrement time by 1, remember we cant use "this" here.
-    watch.time--;
-    
+    // decrement time by 1, remember we cant use "this" here.
+    watch.time--;  
 
-    // DONE: Get the current time, pass that into the stopwatch.timeConverter function,
+    // Get the current time, pass that into the stopwatch.timeConverter function,
     //       and save the result in a variable.
     var converted = watch.timeConverter(watch.time);
     console.log(converted);
 
-    // DONE: Use the variable we just created to show the converted time in the "display" div.
+    // Use the variable we just created to show the converted time in the "display" div.
     $("#display").text(converted);
   },
+
   timeConverter: function(t) {
 
     var minutes = Math.floor(t / 60);
@@ -220,36 +226,45 @@ var watch = {
       }
     };
 
+// Function to reset game
 function resetGame () {
     // We start the game with a score of 0.
     correct = 0;
     wrong = 0;
+    unanswered = 0;
     questionIndex = 0;
     // Let's write things on the page
     $("#correct-text").text(correct);
     $("#wrong-text").text(wrong);
+    $("#unanswered-text").text(unanswered);
     $("#finalScore-text").text(0);
-
+    //ask questions
     renderQuestion();
 }
+
 
  // EXECUTE STUFF //
  
  //  Start on click.
 $("#start").on("click", function() {
-
-    if ( watch.time === 10){
+    //start the clock
     watch.start();
-    }
-    if (watch.time === 0){
-    watch.stop();
-    };
-    renderQuestion();
+    console.log(clockRunning);
+    console.log(watch.time);
     
+    //Start the questions
+    renderQuestion();
+
+    //NOT WORKING!!!! goal of this is to show unanswered question and add it to tally 
+    if (watch.time === 0) {
+        unanswered++;
+        $("#unanswered-text").text(unanswered);
+    }
+
 }
 );
 
-//  Stop on click.
+//  Stop on click. We click to answer
 $("#a-text").on("click", function() {
    //stop the clock
     watch.stop();
@@ -258,22 +273,30 @@ $("#a-text").on("click", function() {
    var a = quizQuestions[questionIndex].answers.a
 
     if (a === quizQuestions[questionIndex].correctAnswer) {
-        correct ++;
+        correct++;
         $("#correct-text").text(correct);
     }
-    else {
+        else {
         wrong++;
         $("#wrong-text").text(wrong);
     }
 
+    // Increment the questionIndex variable and call the renderQuestion function.
+    questionIndex++;
+    renderQuestion();
 
     //reset the clock and start it up again
     watch.reset();
     watch.start();
+    console.log(clockRunning);
+    console.log(watch.time);
 
-    // Increment the questionIndex variable and call the renderQuestion function.
-    questionIndex++;
-    renderQuestion();
+    //NOT WORKING!!!! goal of this is to show unanswered question and add it to tally 
+    if (watch.time === 0) {
+        unanswered++;
+        $("#unanswered-text").text(unanswered);
+    }
+
 });
      
 //  Stop on click.
@@ -285,21 +308,30 @@ $("#b-text").on("click", function() {
     var b = quizQuestions[questionIndex].answers.b
 
     if (b === quizQuestions[questionIndex].correctAnswer) {
-        correct ++;
+        correct++;
         $("#correct-text").text(correct);
-    }
+    } 
     else {
         wrong++;
         $("#wrong-text").text(wrong);
     }
 
-    //reset the clock and start it up again
-    watch.reset();
-    watch.start();
-
     // Increment the questionIndex variable and call the renderQuestion function.
     questionIndex++;
     renderQuestion();
+
+    //reset the clock and start it up again
+    watch.reset();
+    watch.start();
+    console.log(clockRunning);
+    console.log(watch.time);
+
+     //NOT WORKING!!!! goal of this is to show unanswered question and add it to tally    
+    if (watch.time === 0) {
+        unanswered++;
+        $("#unanswered-text").text(unanswered);
+    }
+
 });
 
 //  Stop on click.
@@ -311,7 +343,7 @@ $("#c-text").on("click", function() {
     var c = quizQuestions[questionIndex].answers.c
 
     if (c === quizQuestions[questionIndex].correctAnswer) {
-        correct ++;
+        correct++;
         $("#correct-text").text(correct);
     }
     else {
@@ -319,13 +351,22 @@ $("#c-text").on("click", function() {
         $("#wrong-text").text(wrong);
     }
 
-    //reset the clock and start it up again
-    watch.reset();
-    watch.start();
-    
     // Increment the questionIndex variable and call the renderQuestion function.
     questionIndex++;
     renderQuestion();
+
+    //reset the clock and start it up again
+    watch.reset();
+    watch.start();
+    console.log(clockRunning);
+    console.log(watch.time);
+    
+    //NOT WORKING!!!! goal of this is to show unanswered question and add it to tally 
+    if (watch.time === 0) {
+        unanswered++;
+        $("#unanswered-text").text(unanswered);
+    }
+
 });
 
 
@@ -333,9 +374,7 @@ $("#c-text").on("click", function() {
 $("#reset").on("click", function() {
     watch.reset();
     resetGame();
-
-    }
-    );
+});
 
 </script>
 
