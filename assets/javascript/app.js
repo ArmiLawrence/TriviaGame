@@ -1,7 +1,7 @@
 ///////Notes///////
 // 2018-12-17 A. Lawrence //
 // Problem Descriptions: //
-// 1. Timer - Works most of the time. It is buggy and stops whenever it wants to.
+// 
 // 2. Setting interval for waiting period - I can't seem to do that. The timer does not reset to 10 seconds when I put in a waiting function for 5 seconds.
 //          - waiting function used and placed after If/Else statement and before rendering next question
 //          - setTimeout(watch.stop, 1000 * 5);
@@ -110,7 +110,6 @@ var watch = {
 
         intervalId = setInterval(watch.count, 1000);
         clockRunning = true;             
-        setTimeout(watch.stop, 1000 * 10);
     } 
   },
 
@@ -125,6 +124,12 @@ var watch = {
 
     // decrement time by 1, remember we cant use "this" here.
     watch.time--;  
+
+    if (watch.time === 0) {
+        clockRunning = false;
+        clearInterval(intervalId);
+        addUnanswered();
+    }
 
     // Get the current time, pass that into the stopwatch.timeConverter function, and save the result in a variable.
     var converted = watch.timeConverter(watch.time);
@@ -190,10 +195,9 @@ function resetGame () {
 
 // Function to add to the unanswered score
 function addUnanswered (){
-    if (clockRunning = false) {
         unanswered++;
         $("#unanswered-text").text(unanswered);
-    }
+
 }
 
  // EXECUTE STUFF //
@@ -209,7 +213,7 @@ $("#start").on("click", function() {
     //Start the questions
     renderQuestion();
 
-    //NOT WORKING!!!! goal of this is to show unanswered question and add it to tally 
+    //Show unanswered question and add it to tally 
     addUnanswered();
 
 }
@@ -248,6 +252,8 @@ $("#a-text").on("click", function() {
 
     }
 
+    //Empty the DIV for next detail
+    //$("#disneyImage").empty();
 
     // Increment the questionIndex variable and call the renderQuestion function.
     questionIndex++;
@@ -257,7 +263,7 @@ $("#a-text").on("click", function() {
     watch.reset();
     watch.start();
 
-    //NOT WORKING!!!! goal of this is to show unanswered question and add it to tally 
+    //Show unanswered question and add it to tally 
     addUnanswered();
 
 
@@ -305,7 +311,9 @@ $("#b-text").on("click", function() {
     };
 
 
-
+     //Empty the DIV for next detail
+     //$("#disneyImage").empty();
+   
     // Increment the questionIndex variable and call the renderQuestion function.
     questionIndex++;
     renderQuestion();
@@ -359,6 +367,8 @@ $("#c-text").on("click", function() {
             $("#disneyImage").append(imageF); 
     };
 
+    //Empty the DIV for next detail
+    //$("#disneyImage").empty();
 
     // Increment the questionIndex variable and call the renderQuestion function.
     questionIndex++;
@@ -369,7 +379,7 @@ $("#c-text").on("click", function() {
     watch.start();
 
     
-    //NOT WORKING!!!! goal of this is to show unanswered question and add it to tally 
+    //Sshow unanswered question and add it to tally 
     addUnanswered();
 
 });
