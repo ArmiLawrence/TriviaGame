@@ -1,18 +1,9 @@
 ///////Notes///////
-// 2018-12-17 A. Lawrence //
+// 2018-12-19 A. Lawrence //
 // Problem Descriptions: //
-// 
-// 2. Setting interval for waiting period - I can't seem to do that. The timer does not reset to 10 seconds when I put in a waiting function for 5 seconds.
-//          - waiting function used and placed after If/Else statement and before rendering next question
-//          - setTimeout(watch.stop, 1000 * 5);
-// 3. Unanswered Text - I believe my watch timer has issues that just won't work. Can't set to 
-//          - clockRunning = False after the setTimeout function is triggered. Therefore, the logic for unanswered text is not writing correctly. 
-// 4. Images - Images get inserted in jumbotron after the question is answered, but in the next question. I want it to insert in the current one or moving on to the next question
-//          - If/Else statement is not working for the images. Both images show up at the same time. 
-//          - Inability to clear the images for the next question
-//          - Clearing function used; was not working because it cleared the images entirely instead of showing it. Might work if Case statement is used
-//          - var x = document.getElementById("disneyImage");
-//          - x.style.display = "none";
+// 1. Timer in the last question won't stop if the correct answer is not picked.
+// 2. Timer is buggy and does not go through the whole cycle
+
 
 
 ///////BEGIN CODE HERE///////
@@ -39,7 +30,9 @@ var quizQuestions = [
         answers: {
             a: "Scar",
             b: "Mufasa",
-            c: "Simba"
+            c: "Simba",
+            d: "Timon",
+            e: "Pumba"
         },
         correctAnswer: "Mufasa"
     },
@@ -48,7 +41,9 @@ var quizQuestions = [
         answers: {
             a: "Scuttle",
             b: "Ursula",
-            c: "Sebastian"
+            c: "Sebastian",
+            d: "Prince Eric",
+            e: "Flounder"
         },
         correctAnswer: "Sebastian"
     },
@@ -57,7 +52,9 @@ var quizQuestions = [
         answers: {
             a: "Chip",
             b: "Featherduster",
-            c: "LeFou"
+            c: "LeFou",
+            d: "Belle",
+            e: "Lumiere"
         },
         correctAnswer: "Chip"
     },
@@ -65,8 +62,10 @@ var quizQuestions = [
         question: "Where is the setting of The Princess and the Frog?",
         answers: {
             a: "Paris",
-            b: "New Orleans",
-            c: "New York City"
+            b: "Anaheim",
+            c: "New York City",
+            d: "New Orleans",
+            e: "Aldovia"
         },
         correctAnswer: "New Orleans"
     },
@@ -75,11 +74,15 @@ var quizQuestions = [
         answers: {
             a: "Apu turned into an elephant",
             b: "Genie carried them",
-            c: "Rode on Magic Carpet"
+            c: "They dug themselves out with a shovel",
+            d: "They did not get out of the Cave",
+            e: "Rode on Magic Carpet"
         },
         correctAnswer: "Rode on Magic Carpet"
     }
 ];
+
+
    
 // VARIABLES FOR THE WATCH
 //  Variable that will hold our setInterval that runs the stopwatch
@@ -122,14 +125,15 @@ var watch = {
 
   count: function() {
 
-    // decrement time by 1, remember we cant use "this" here.
+    // decrement time by 1, remember we cant use "this" here. Stop the clock when time hits 0
     watch.time--;  
 
     if (watch.time === 0) {
-        clockRunning = false;
-        clearInterval(intervalId);
+        watch.stop();
         addUnanswered();
-    }
+        wrong++;
+        $("#wrong-text").text(wrong);
+    };
 
     // Get the current time, pass that into the stopwatch.timeConverter function, and save the result in a variable.
     var converted = watch.timeConverter(watch.time);
@@ -168,6 +172,8 @@ var watch = {
         document.querySelector("#a-text").innerHTML = quizQuestions[questionIndex].answers.a;
         document.querySelector("#b-text").innerHTML = quizQuestions[questionIndex].answers.b;
         document.querySelector("#c-text").innerHTML = quizQuestions[questionIndex].answers.c;
+        document.querySelector("#d-text").innerHTML = quizQuestions[questionIndex].answers.d;
+        document.querySelector("#e-text").innerHTML = quizQuestions[questionIndex].answers.e;
       }
       // If there aren't, render the end game screen.
       else {
@@ -191,6 +197,8 @@ function resetGame () {
     $("#finalScore-text").text(0);
     //ask questions
     renderQuestion();
+    //Empty the DIV for next detail
+    $("#disneyImage").empty();
 }
 
 // Function to add to the unanswered score
@@ -199,6 +207,19 @@ function addUnanswered (){
         $("#unanswered-text").text(unanswered);
 
 }
+
+function allFunctions() {
+    // Increment the questionIndex variable and call the renderQuestion function.
+    questionIndex++;
+    renderQuestion();
+
+    //reset the clock and start it up again
+    watch.reset();
+    watch.start();    
+    //Empty the DIV for next detail
+    $("#disneyImage").empty();
+};
+
 
  // EXECUTE STUFF //
  
@@ -209,22 +230,18 @@ $("#start").on("click", function() {
     watch.start();
     console.log(clockRunning);
     console.log(watch.time);
-    
-    //Start the questions
+
     renderQuestion();
 
-    //Show unanswered question and add it to tally 
-    addUnanswered();
-
+    //moves on to the next question if not answered.
+    setTimeout(allFunctions, 1000 * 10);
+  
 }
 );
 
 //  Stop on click. We click to answer
 $("#a-text").on("click", function() {
 
-
-   //stop the clock
-    watch.stop();
    
    //let's see if we get it right 
    var a = quizQuestions[questionIndex].answers.a
@@ -233,11 +250,18 @@ $("#a-text").on("click", function() {
         correct++;
         $("#correct-text").text(correct);
 
+        //Empty the DIV for next detail
+        $("#disneyImage").empty();   
+
         //make image
         var imageC = $("<img>");
             imageC.addClass("dis-image");
             imageC.attr("src", "assets/images/Chip.jpg");
-            $("#disneyImage").append(imageC);   
+            $("#disneyImage").append(imageC);  
+        
+
+       //Reset and start new question, holds the image for 4 seconds     
+        setTimeout(allFunctions, 1000 * 4);  
 
     }
         else {
@@ -249,32 +273,19 @@ $("#a-text").on("click", function() {
             imageF.addClass("dis-image");
             imageF.attr("src", "assets/images/Mickey.jpg");
             $("#disneyImage").append(imageF);  
+        
+        //Reset and start new question, holds the image for 4 seconds         
+        setTimeout(allFunctions, 1000 * 4);  
 
     }
-
-    //Empty the DIV for next detail
-    //$("#disneyImage").empty();
-
-    // Increment the questionIndex variable and call the renderQuestion function.
-    questionIndex++;
-    renderQuestion();
-
-    //reset the clock and start it up again
-    watch.reset();
-    watch.start();
-
-    //Show unanswered question and add it to tally 
-    addUnanswered();
-
+ 
+    //moves on to the next question if not answered in 10 seconds
+    setTimeout(allFunctions, 1000 * 10);
 
 });
      
 //  Stop on click.
 $("#b-text").on("click", function() {
-
-  
-    //stop the clock
-    watch.stop();
 
     //let's see if we get it right 
     var b = quizQuestions[questionIndex].answers.b
@@ -283,55 +294,46 @@ $("#b-text").on("click", function() {
         correct++;
         $("#correct-text").text(correct);
 
-        // Let's make pictures
-        if (quizQuestions[0]){
+        //Empty the DIV for next detail
+        $("#disneyImage").empty();
 
-            var imageA = $("<img>");
-                imageA.addClass("dis-image");
-                imageA.attr("src", "assets/images/Mufasa.png");
-                $("#disneyImage").append(imageA);
-        }
-        else (quizQuestions[3]);{
-            var imageD = $("<img>");
-                imageD.addClass("dis-image");
-                imageD.attr("src", "assets/images/NewOrleans.jpg");
-                $("#disneyImage").append(imageD);  
-        };
+        // Let's make pictures
+        var imageA = $("<img>");
+            imageA.addClass("dis-image");
+            imageA.attr("src", "assets/images/Mufasa.png");
+            $("#disneyImage").append(imageA);
+
+    
+        //Reset and start new question, holds the image for 4 seconds         
+        setTimeout(allFunctions, 1000 * 4);  
         
     } 
     else {
         wrong++;
         $("#wrong-text").text(wrong);
 
+        //Empty the DIV for next detail
+        $("#disneyImage").empty();
+
         //make image of sad mickey
         var imageF = $("<img>");
             imageF.addClass("dis-image");
             imageF.attr("src", "assets/images/Mickey.jpg");
             $("#disneyImage").append(imageF); 
+    
+        //Reset and start new question, holds the image for 4 seconds        
+        setTimeout(allFunctions, 1000 * 4);  
+            
     };
 
-
-     //Empty the DIV for next detail
-     //$("#disneyImage").empty();
-   
-    // Increment the questionIndex variable and call the renderQuestion function.
-    questionIndex++;
-    renderQuestion();
-
-    //reset the clock and start it up again
-    watch.reset();
-    watch.start();
-
-    //NOT WORKING!!!! goal of this is to show unanswered question and add it to tally 
-    addUnanswered();
+    //moves on to the next question if not answered in 10 seconds
+    setTimeout(allFunctions, 1000 * 10);
 
 });
 
 //  Stop on click.
 $("#c-text").on("click", function() {
 
-    //stop the clock
-    watch.stop();
 
     //let's see if we get it right 
     var c = quizQuestions[questionIndex].answers.c
@@ -340,50 +342,148 @@ $("#c-text").on("click", function() {
         correct++;
         $("#correct-text").text(correct);
 
+        //Empty the DIV for next detail
+        $("#disneyImage").empty();
+
         // Let's make pictures
-        if (quizQuestions[1]){
-            var imageB = $("<img>");
-                imageB.addClass("dis-image");
-                imageB.attr("src", "assets/images/Sebastian.jpg");
-                $("#disneyImage").append(imageB);   
-            
-        }
-        else (quizQuestions[4]);{
-            var imageE = $("<img>");
-                imageE.addClass("dis-image");
-                imageE.attr("src", "assets/images/MagicCarpet.jpg");
-                $("#disneyImage").append(imageE);  
-        };
+        var imageB = $("<img>");
+            imageB.addClass("dis-image");
+            imageB.attr("src", "assets/images/Sebastian.jpg");
+            $("#disneyImage").append(imageB);   
+        
+        //Reset and start new question, holds the image for 4 seconds      
+        setTimeout(allFunctions, 1000 * 4);  
 
     }
     else {
         wrong++;
         $("#wrong-text").text(wrong);
 
+        //Empty the DIV for next detail
+        $("#disneyImage").empty();
+
         //make image of sad Mickey
         var imageF = $("<img>");
             imageF.addClass("dis-image");
             imageF.attr("src", "assets/images/Mickey.jpg");
             $("#disneyImage").append(imageF); 
+
+
+        //Reset and start new question, holds the image for 4 seconds      
+        setTimeout(allFunctions, 1000 * 4);     
     };
 
-    //Empty the DIV for next detail
-    //$("#disneyImage").empty();
-
-    // Increment the questionIndex variable and call the renderQuestion function.
-    questionIndex++;
-    renderQuestion();
-
-    //reset the clock and start it up again
-    watch.reset();
-    watch.start();
-
-    
-    //Sshow unanswered question and add it to tally 
-    addUnanswered();
+    //moves on to the next question if not answered in 10 seconds
+    setTimeout(allFunctions, 1000 * 10);
 
 });
 
+
+//  Stop on click.
+$("#d-text").on("click", function() {
+
+    //let's see if we get it right 
+    var d = quizQuestions[questionIndex].answers.d
+
+    if (d === quizQuestions[questionIndex].correctAnswer) {
+        correct++;
+        $("#correct-text").text(correct);
+
+        //Empty the DIV for next detail
+        $("#disneyImage").empty();
+
+        // Let's make pictures
+        var imageD = $("<img>");
+            imageD.addClass("dis-image");
+            imageD.attr("src", "assets/images/NewOrleans.jpg");
+            $("#disneyImage").append(imageD);   
+
+        
+        //Reset and start new question, holds the image for 4 seconds       
+        setTimeout(allFunctions, 1000 * 4);  
+
+    }
+    else {
+        wrong++;
+        $("#wrong-text").text(wrong);
+
+        //Empty the DIV for next detail
+        $("#disneyImage").empty();
+
+        //make image of sad Mickey
+        var imageF = $("<img>");
+            imageF.addClass("dis-image");
+            imageF.attr("src", "assets/images/Mickey.jpg");
+            $("#disneyImage").append(imageF); 
+
+
+        //Reset and start new question, holds the image for 4 seconds       
+        setTimeout(allFunctions, 1000 * 4);    
+    };
+
+    //moves on to the next question if not answered in 10 seconds
+    setTimeout(allFunctions, 1000 * 10);
+
+});
+
+//  Stop on click.
+$("#e-text").on("click", function() {
+
+    //let's see if we get it right 
+    var e = quizQuestions[questionIndex].answers.e
+
+    if (e === quizQuestions[questionIndex].correctAnswer) {
+        correct++;
+        $("#correct-text").text(correct);
+
+        //Empty the DIV for next detail
+        $("#disneyImage").empty();
+
+        // Let's make pictures
+        var imageE = $("<img>");
+            imageE.addClass("dis-image");
+            imageE.attr("src", "assets/images/MagicCarpet.jpg");
+            $("#disneyImage").append(imageE);   
+       
+        //stop the clock
+        watch.stop();
+
+        //Finish the game!
+        document.querySelector("#question-text").innerHTML = "Game Over!";
+        document.querySelector("#finalScore-text").innerHTML = correct + " out of " + quizQuestions.length;
+
+    }
+    else {
+        wrong++;
+        $("#wrong-text").text(wrong);
+
+        //Empty the DIV for next detail
+        $("#disneyImage").empty();
+
+        //make image of sad Mickey
+        var imageF = $("<img>");
+            imageF.addClass("dis-image");
+            imageF.attr("src", "assets/images/Mickey.jpg");
+            $("#disneyImage").append(imageF); 
+
+        //stop the clock
+        watch.stop();
+
+        //Finish the game!
+        document.querySelector("#question-text").innerHTML = "Game Over!";
+        document.querySelector("#finalScore-text").innerHTML = correct + " out of " + quizQuestions.length;
+
+    };
+
+    //stop the clock
+    watch.stop();
+
+    //Finish the game!
+    document.querySelector("#question-text").innerHTML = "Game Over!";
+    document.querySelector("#finalScore-text").innerHTML = correct + " out of " + quizQuestions.length;
+
+  
+});
 
 //  reset stuff
 $("#reset").on("click", function() {
