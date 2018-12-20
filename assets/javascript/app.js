@@ -1,8 +1,8 @@
 ///////Notes///////
 // 2018-12-19 A. Lawrence //
 // Problem Descriptions: //
-// 1. Timer in the last question won't stop if the correct answer is not picked.
-// 2. Timer is buggy and does not go through the whole cycle
+// 1. Timer in the last question won't stop if the correct answer is not picked. Console says there is an error "answers undefined" for quizQuestions[questionIndex].answers.e
+// 2. Timer is buggy and does not go through the whole cycle. Will be too fast and cut off after a few seconds.
 
 
 
